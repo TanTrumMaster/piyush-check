@@ -53,6 +53,9 @@ jobs:
       - name: Convert Postman to OpenAPI
         run: |
           npm install postman-to-openapi
+      - name: p2o
+        run: |
+          pip install p2o
           
         # npx postman-to-openapi postman_collection.json openapi.yaml
       - name: conversion
