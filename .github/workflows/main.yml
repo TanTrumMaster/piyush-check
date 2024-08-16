@@ -66,8 +66,8 @@ jobs:
       - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
         with:
-          name: openapi-file
-          path: openapi.yaml
+          name: open-file
+          path: open.yaml
 
       - name: Run ZAP API Scan
         run: |
