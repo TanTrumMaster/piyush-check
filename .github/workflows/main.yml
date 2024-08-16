@@ -53,9 +53,13 @@ jobs:
       - name: Convert Postman to OpenAPI
         run: |
           npm install postman-to-openapi
-          p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
+          
         # npx postman-to-openapi postman_collection.json openapi.yaml
+      - name: conversion
+        run: |
+          p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
 
+          
       - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
         with:
