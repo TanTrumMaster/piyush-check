@@ -44,26 +44,26 @@ jobs:
       - name: Check if Postman Collection file exists
         run: ls -l postman_collection.json
 
-      # - name: Convert Postman to OpenAPI
-      #   run: |
-      #     npm install postman-to-openapi
-      #     npx postman-to-openapi postman_collection.json openapi.yaml
-
-      # - name: Upload OpenAPI file
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: openapi-file
-      #     path: openapi.yaml
-
-      - name: Run ZAP API Scan
+      - name: Convert Postman to OpenAPI
         run: |
-          docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
-            -t /zap/wrk/postman_collection.json \
-            -f openapi \
-            -r /zap/wrk/zap_report.html
+          npm install postman-to-openapi
+          npx postman-to-openapi postman_collection.json openapi.yaml
 
-      - name: Upload ZAP Report
+      - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
         with:
-          name: zap-report
-          path: zap_report.html
+          name: openapi-file
+          path: openapi.yaml
+
+      # - name: Run ZAP API Scan
+      #   run: |
+      #     docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
+      #       -t /zap/wrk/postman_collection.json \
+      #       -f openapi \
+      #       -r /zap/wrk/zap_report.html
+
+      # - name: Upload ZAP Report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: zap-report
+      #     path: zap_report.html
