@@ -57,10 +57,10 @@ jobs:
 
       - name: Run ZAP API Scan
         run: |
-          docker run -t zaproxy/zap-stable zap-api-scan.py \
-            -t ./postman_collection.json \
+          docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
+            -t /zap/wrk/postman_collection.json \
             -f openapi \
-            -r zap_report.html
+            -r /zap/wrk/zap_report.html
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
