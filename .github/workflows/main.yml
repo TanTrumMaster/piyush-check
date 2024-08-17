@@ -69,8 +69,6 @@ jobs:
       - name: Set permissions for ZAP report directory
         run: sudo chmod -R 777 ${{ github.workspace }}/zap_output/
 
-
-
       - name: Run ZAP API Scan
         run: |
           sudo docker run -t --user root -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
