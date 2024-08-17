@@ -2,7 +2,7 @@
   "repoPath": "https://github.com/Anshu-rai89/OnlineAssesment.git",
   "framework": "express",
   "objectInstance": "router",
-  "baseUrl":"https://dummy-backend-check.onrender.com",
+  "baseUrl":"https://backend-testing2-0.onrender.com",
   "collectionName":"admin",
   "githubAPIKey":"",
   "workspaceId":"",
