@@ -65,13 +65,18 @@ jobs:
         with:
           name: openapi-file
           path: openapi.yaml
+      - name: Set permissions for ZAP working directory
+        run: |
+          sudo chmod -R 777 ${{ github.workspace }}
+          sudo chmod -R 777 /zap/wrk
+
 
       - name: Run ZAP API Scan
         run: |
           docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
             -t /zap/wrk/openapi.yaml \
             -f openapi \
-            -r /zap/wrk/zap_report.html
+            -r zap_report.html
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
