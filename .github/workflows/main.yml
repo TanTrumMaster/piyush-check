@@ -68,7 +68,12 @@ jobs:
         with:
           name: openapi-file
           path: openapi.yaml
-
+          
+      - name: Create and ensure writable directory
+        run: |
+          mkdir -p ${{ github.workspace }}/zap/wrk
+          chmod -R 777 ${{ github.workspace }}/zap/wrk
+          
       - name: Run ZAP API Scan
         run: |
           docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
