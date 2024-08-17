@@ -65,10 +65,6 @@ jobs:
         with:
           name: openapi-file
           path: openapi.yaml
-      - name: Set permissions for ZAP working directory
-        run: |
-          sudo chmod -R 777 ${{ github.workspace }}
-          sudo chmod -R 777 /zap/wrk
 
 
       - name: Run ZAP API Scan
