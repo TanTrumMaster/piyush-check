@@ -66,7 +66,7 @@ jobs:
           mkdir -p $ZAP_HOME
           /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
           sleep 30  # Wait for ZAP to start
-          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t openapi.yaml
+          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t OpenAPI.yaml
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
