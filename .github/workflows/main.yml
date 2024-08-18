@@ -1,56 +1,18 @@
-name: Trigger Scan
+name: ZAP Scan
 
 on:
+  push:
+    branches:
+      - main
   workflow_dispatch:
-    inputs:
-      repo_url:
-        description: 'Repository URL to update in config.json'
-        required: true
 
 jobs:
-  update-and-run:
+  zap-scan:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Update config.json with the new URL
-        run: |
-          CONFIG_FILE="config.json"
-          jq --arg url "${{ github.event.inputs.repo_url }}" '.repoPath = $url' "$CONFIG_FILE" > tmp.$$.json && mv tmp.$$.json "$CONFIG_FILE"
-          echo "Updated repoPath in config.json to ${{ github.event.inputs.repo_url }}"
-
-      - name: Run JavaScript project
-        run: |
-          npm install
-          npm run start
-
-      - name: Upload Postman Collection
-        uses: actions/upload-artifact@v2
-        with:
-          name: postman-collection
-          path: postman_collection.json
-
-      - name: Download Postman Collection Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: postman-collection
-          path: ./
-
-      - name: Install Postman-to-OpenAPI
-        run: |
-          npm install postman-to-openapi
-
-      - name: Convert Postman Collection to OpenAPI
-        run: |
-          node p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
-
-      - name: Upload OpenAPI file
-        uses: actions/upload-artifact@v2
-        with:
-          name: openapi-file
-          path: openapi.yaml
+        uses: actions/checkout@v3
 
       - name: Install ZAP
         run: |
@@ -59,17 +21,18 @@ jobs:
           sudo mv ZAP_2.14.0 /opt/zap
           sudo ln -s /opt/zap/zap.sh /usr/local/bin/zap
 
-      - name: Run ZAP API Scan
+      - name: Start ZAP
         run: |
-          # Set a unique ZAP home directory
           export ZAP_HOME="/home/runner/zap-home"
           mkdir -p $ZAP_HOME
-          /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
-          sleep 30  # Wait for ZAP to start
-          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t OpenAPI.yaml
+          zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
+
+      - name: Run API Security Scan
+        run: |
+          java -jar /opt/zap/ZAP_2.14.0/zap.jar -cmd -quick-scan -t https://backend-testing2-0.onrender.com -r zap_report.html
 
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: zap-html-report
-          path: report.html
+          path: zap_report.html
