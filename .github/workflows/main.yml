@@ -62,7 +62,7 @@ jobs:
         run: |
           zap -daemon -port 8080 -host 0.0.0.0 &
           sleep 30  # Wait for ZAP to start
-          zap-cli -p 8080 quick-scan -r report.html openapi.yaml
+          zap-cli -p 8080 quick-scan -r report.html OpenAPI.yaml
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
