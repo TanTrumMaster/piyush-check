@@ -39,11 +39,12 @@ jobs:
           path: ./
 
       - name: Install Postman-to-OpenAPI
-        run: npm install -g postman-to-openapi
+        run: |
+          npm install postman-to-openapi
 
       - name: Convert Postman Collection to OpenAPI
         run: |
-          postman-to-openapi postman_collection.json openapi.yaml
+          node p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
 
       - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
