@@ -61,9 +61,9 @@ jobs:
 
       - name: Run ZAP API Scan
         run: |
-          zap -daemon -port 8080 -host 0.0.0.0 &
+          /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 &
           sleep 30  # Wait for ZAP to start
-          zap-cli -p 8080 quick-scan -r report.html OpenAPI.yaml
+          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t OpenAPI.yml
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
