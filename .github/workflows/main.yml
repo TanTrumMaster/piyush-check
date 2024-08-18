@@ -61,9 +61,12 @@ jobs:
 
       - name: Run ZAP API Scan
         run: |
-          /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 &
+          # Set a unique ZAP home directory
+          export ZAP_HOME="/home/runner/zap-home"
+          mkdir -p $ZAP_HOME
+          /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
           sleep 30  # Wait for ZAP to start
-          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t OpenAPI.yml
+          /opt/zap/zap.sh -cmd -quick-scan -r report.html -t openapi.yaml
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
