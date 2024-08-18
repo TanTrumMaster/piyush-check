@@ -31,58 +31,41 @@ jobs:
         with:
           name: postman-collection
           path: postman_collection.json
-          
+
       - name: Download Postman Collection Artifact
         uses: actions/download-artifact@v2
         with:
-            name: postman-collection
-            path: ./
+          name: postman-collection
+          path: ./
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: tantrummaster
-          password: dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU
+      - name: Install Postman-to-OpenAPI
+        run: npm install -g postman-to-openapi
 
-      - name: Pull the latest ZAP Docker image
-        run: docker pull zaproxy/zap-stable
-
-      - name: Check if Postman Collection file exists
-        run: ls -l postman_collection.json
-
-      - name: Convert Postman to OpenAPI
+      - name: Convert Postman Collection to OpenAPI
         run: |
-          npm install postman-to-openapi
-      # - name: p2o
-      #   run: |
-      #     pip install p2o
-          
-        # npx postman-to-openapi postman_collection.json openapi.yaml
-      - name: conversion
-        run: |
-          node p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
+          postman-to-openapi postman_collection.json openapi.yaml
 
-          
       - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
         with:
           name: openapi-file
           path: openapi.yaml
-          
-      - name: Create and ensure writable directory
+
+      - name: Install ZAP
         run: |
-          mkdir -p ${{ github.workspace }}/zap/wrk
-          chmod -R 777 ${{ github.workspace }}/zap/wrk
-          
+          wget https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz
+          tar -xzf ZAP_2.14.0_Linux.tar.gz
+          sudo mv ZAP_2.14.0 /opt/zap
+          sudo ln -s /opt/zap/zap.sh /usr/local/bin/zap
+
       - name: Run ZAP API Scan
         run: |
-          docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
-            -t /zap/wrk/OpenAPI.yml \
-            -f openapi \
-            -J report_json
-#/zap/wrk/
+          zap -daemon -port 8080 -host 0.0.0.0 &
+          sleep 30  # Wait for ZAP to start
+          zap-cli -p 8080 quick-scan -r report.html openapi.yaml
+
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
-          name: zap-json-report
-          path: report_json
+          name: zap-html-report
+          path: report.html
