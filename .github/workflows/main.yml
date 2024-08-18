@@ -25,11 +25,24 @@ jobs:
         run: |
           export ZAP_HOME="/home/runner/zap-home"
           mkdir -p $ZAP_HOME
-          zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
+          /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
 
-      - name: Run API Security Scan
+      - name: Import OpenAPI and Start Scan
         run: |
-          java -jar /opt/zap/ZAP_2.14.0/zap.jar -cmd -quick-scan -t https://backend-testing2-0.onrender.com -r zap_report.html
+          # Wait for ZAP to start
+          sleep 30
+          
+          # Import the OpenAPI file into ZAP
+          curl -X POST "http://localhost:8080/JSON/openapi/action/importOpenAPI/?url=https://path/to/OpenAPI.yml"
+
+          # Start the scan
+          curl -X POST "http://localhost:8080/JSON/ascan/action/scan/?url=https://backend-testing2-0.onrender.com&recurse=true"
+
+          # Wait for the scan to complete
+          sleep 60
+          
+          # Fetch alerts
+          curl "http://localhost:8080/JSON/core/view/alerts/?baseurl=https://backend-testing2-0.onrender.com&count=10"
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
