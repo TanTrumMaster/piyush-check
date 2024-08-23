@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ZAP Report
-        path: ./zap_report.html
+        path: ${{ github.workspace }}/report/testreport.html
