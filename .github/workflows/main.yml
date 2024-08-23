@@ -14,9 +14,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Docker
-      uses: actions/setup-docker@v2
-
     - name: Run OWASP ZAP API Scan
       run: |
         docker pull owasp/zap2docker-stable
@@ -28,65 +25,3 @@ jobs:
       with:
         name: ZAP Report
         path: ./zap_report.html
-
-
-# name: ZAP Scan
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   workflow_dispatch:
-
-# jobs:
-#   zap-scan:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
-
-#       - name: Install ZAP
-#         run: |
-#           wget https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz
-#           tar -xzf ZAP_2.14.0_Linux.tar.gz
-#           sudo mv ZAP_2.14.0 /opt/zap
-#           sudo ln -s /opt/zap/zap.sh /usr/local/bin/zap
-
-#       - name: Start ZAP
-#         run: |
-#           export ZAP_HOME="/home/runner/zap-home"
-#           mkdir -p $ZAP_HOME
-#           /opt/zap/zap.sh -daemon -port 8080 -host 0.0.0.0 -dir $ZAP_HOME &
-          
-#       - name: Wait for ZAP to start
-#         run: sleep 60  # Adjust as needed
-
-#       - name: Check ZAP status
-#         run: |
-#           curl -X GET "http://localhost:8080/JSON/core/view/version/"
-
-#       - name: Import OpenAPI
-#         run: |
-#           curl -X POST "http://localhost:8080/JSON/openapi/action/importOpenAPI/" \
-#           -d "url=https://path/to/OpenAPI.yml" \
-#           -H "Content-Type: application/json"
-
-#       - name: Start Scan
-#         run: |
-#           curl -X POST "http://localhost:8080/JSON/ascan/action/scan/" \
-#           -d "url=https://backend-testing2-0.onrender.com&recurse=true" \
-#           -H "Content-Type: application/x-www-form-urlencoded"
-
-#       - name: Wait for scan to complete
-#         run: sleep 60  # Adjust based on expected scan duration
-
-#       - name: Fetch Alerts
-#         run: |
-#           curl "http://localhost:8080/JSON/core/view/alerts/?baseurl=https://backend-testing2-0.onrender.com&count=10"
-
-#       - name: Upload ZAP Report
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: zap-html-report
-#           path: zap_report.html
