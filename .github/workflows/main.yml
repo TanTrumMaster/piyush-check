@@ -14,9 +14,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Run OWASP ZAP API Scan
+    - name: Log in to Docker Hub
+      run: |
+        echo "dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU" | docker login --username tantrummaster --password-stdin
+
+    - name: Pull OWASP ZAP Docker image
       run: |
         docker pull owasp/zap2docker-stable
+
+    - name: Run OWASP ZAP API Scan
+      run: |
         docker run -v ${{ github.workspace }}:/zap/wrk:rw -t owasp/zap2docker-stable zap-api-scan.py -t "https://backend-testing2-0.onrender.com/api/v1/roles" -f openapi -r zap_report.html
         docker cp $(docker ps -q -l):/zap/zap_report.html ./zap_report.html
 
