@@ -26,7 +26,7 @@ jobs:
 
     - name: Run OWASP ZAP API Scan
       run: |
-        docker run --name zap-scan -v ${{ github.workspace }}:/zap zaproxy/zap-stable zap-api-scan.py -t "https://dummy-backend-check.onrender.com/api/users" -f openapi -r /zap/zap_report.html
+        docker run -v ${{ github.workspace }}:/zap zaproxy/zap-stable zap-api-scan.py -t "https://dummy-backend-check.onrender.com/api/users" -f openapi -r /zap/zap_report.html
         docker cp zap-scan:/zap/zap_report.html ./zap_report.html
         
 
