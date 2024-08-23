@@ -22,11 +22,11 @@ jobs:
 
     - name: Pull OWASP ZAP Docker image
       run: |
-        docker pull owasp/zap2docker-stable
+        docker pull owasp/zap2docker-weekly
 
     - name: Run OWASP ZAP API Scan
       run: |
-        docker run -v ${{ github.workspace }}:/zap/wrk:rw -t owasp/zap2docker-stable zap-api-scan.py -t "https://backend-testing2-0.onrender.com/api/v1/roles" -f openapi -r zap_report.html
+        docker run -v ${{ github.workspace }}:/zap/wrk:rw -t owasp/zap2docker-weekly zap-api-scan.py -t "https://backend-testing2-0.onrender.com/api/v1/roles" -f openapi -r zap_report.html
         docker cp $(docker ps -q -l):/zap/zap_report.html ./zap_report.html
 
     - name: Upload ZAP Report
