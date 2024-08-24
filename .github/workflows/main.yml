@@ -57,7 +57,7 @@ jobs:
     
     - name: conversion
       run: |
-        node postman-to-openapi ./postman_collection.json -o ./openapi.json --pretty
+        npx postman-to-openapi ./postman_collection.json -o ./openapi.json --pretty
 
     
     - name: Upload OpenAPI file
