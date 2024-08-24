@@ -67,16 +67,14 @@ jobs:
           name: openapi-file
           path: ./
 
-      - name: Run ZAP API Scan using OpenAPI
+      - name: Run ZAP Full Scan
         run: |
           mkdir -p ${{ github.workspace }}/report
           chmod 777 ${{ github.workspace }}/report
-          docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -v ${{ github.workspace }}/openapi.yaml:/zap/wrk/openapi.yaml:ro zaproxy/zap-stable zap-api-scan.py \
-            -t /zap/wrk/openapi.yaml \
-            -f openapi \
-            -r /zap/wrk/testreport.html || true
+          docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -v ${{ github.workspace }}/openapi.yaml:/zap/openapi.yaml:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t https://backend-testing2-0.onrender.com -r /zap/wrk/testreport.html -d /zap/openapi.yaml || true
           echo "Checking if report exists..."
           ls -l ${{ github.workspace }}/report
+
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
