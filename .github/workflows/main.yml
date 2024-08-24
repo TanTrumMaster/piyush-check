@@ -62,7 +62,7 @@ jobs:
       run: |
         mkdir -p ${{ github.workspace }}/report
         chmod 777 ${{ github.workspace }}/report
-        docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t /zap/wrk/openapi.yaml \s -r /zap/wrk/testreport.html || true
+        docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t openapi.yaml -r /zap/wrk/testreport.html || true
         echo "Checking if report exists..."
         ls -l ${{ github.workspace }}/report
 
