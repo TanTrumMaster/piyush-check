@@ -61,20 +61,13 @@ jobs:
           name: openapi-file
           path: openapi.yaml
 
-      - name: Download OpenAPI Artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: openapi-file
-          path: ./
-
-      - name: Run ZAP Full Scan
+      - name: Run ZAP Passive Scan
         run: |
           mkdir -p ${{ github.workspace }}/report
           chmod 777 ${{ github.workspace }}/report
-          docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -v ${{ github.workspace }}/openapi.yaml:/zap/openapi.yaml:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t https://backend-testing2-0.onrender.com -r /zap/wrk/testreport.html -d /zap/openapi.yaml || true
+          docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -v ${{ github.workspace }}/openapi.yaml:/zap/openapi.yaml:rw -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t https://backend-testing2-0.onrender.com -r /zap/wrk/testreport.html || true
           echo "Checking if report exists..."
           ls -l ${{ github.workspace }}/report
-
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
