@@ -62,13 +62,7 @@ jobs:
           
       - name: Convert OpenAPI YAML to JSON
         run: |
-          yaml2json openapi.yaml > openapi.json
-
-      - name: Upload OpenAPI YAML File
-        uses: actions/upload-artifact@v3
-        with:
-          name: openapi-yaml
-          path: openapi.yaml
+          python -c "import yaml, json; json.dump(yaml.safe_load(open('openapi.yaml')), open('openapi.json', 'w'), indent=2)"
 
       - name: Upload OpenAPI JSON File
         uses: actions/upload-artifact@v3
