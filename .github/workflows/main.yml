@@ -44,7 +44,7 @@ jobs:
 
       - name: Convert Postman Collection to OpenAPI
         run: |
-          npx postman-to-openapi ./postman_collection.json -o ./openapi.json --pretty
+          npx postman-to-openapi ./postman_collection.json -o ./openapi.json
 
       - name: Upload OpenAPI file
         uses: actions/upload-artifact@v2
