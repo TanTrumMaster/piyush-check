@@ -71,7 +71,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/report
           chmod 777 ${{ github.workspace }}/report
-          docker run -v ${{ github.workspace }}/zap/wrk:rw -t zaproxy/zap-stable zap-api-scan.py \
+          docker run -v ${{ github.workspace }}:/zap/wrk:rw -t zaproxy/zap-stable zap-api-scan.py \
             -t /zap/wrk/openapi.json \
             -f openapi \
             -r /zap/wrk/zap_report.html || true
