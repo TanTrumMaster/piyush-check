@@ -20,23 +20,21 @@ jobs:
           CONFIG_FILE="config.json"
           jq --arg url "${{ github.event.inputs.repo_url }}" '.repoPath = $url' "$CONFIG_FILE" > tmp.$$.json && mv tmp.$$.json "$CONFIG_FILE"
           echo "Updated repoPath in config.json to ${{ github.event.inputs.repo_url }}"
-
       - name: Run JavaScript project
         run: |
           npm install
           npm run start
-
       - name: Upload Postman Collection
         uses: actions/upload-artifact@v2
         with:
           name: postman-collection
           path: postman_collection.json
-
+          
       - name: Download Postman Collection Artifact
         uses: actions/download-artifact@v2
         with:
-          name: postman-collection
-          path: ./
+            name: postman-collection
+            path: ./
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -53,21 +51,44 @@ jobs:
       - name: Convert Postman to OpenAPI
         run: |
           npm install postman-to-openapi
-          npx postman-to-openapi postman_collection.json openapi.yaml
+      # - name: p2o
+      #   run: |
+      #     pip install p2o
+          
+        # npx postman-to-openapi postman_collection.json openapi.yaml
+      - name: conversion
+        run: |
+          node p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
+          
+      - name: Convert OpenAPI YAML to JSON
+        run: |
+          yaml2json openapi.yaml > openapi.json
 
-      - name: Upload OpenAPI file
-        uses: actions/upload-artifact@v2
+      - name: Upload OpenAPI YAML File
+        uses: actions/upload-artifact@v3
         with:
-          name: openapi-file
+          name: openapi-yaml
           path: openapi.yaml
 
-      - name: Scan OpenAPI with ZAP
-        run: |
-          docker run --rm -v "$(pwd)/openapi.yaml:/zap/openapi.yaml" zaproxy/zap-stable zap -openapi -targetfile /zap/openapi.yaml -reportfile zap_report.xml
-          # Add any additional ZAP arguments or configuration as needed
-
-      - name: Upload ZAP report
-        uses: actions/upload-artifact@v2
+      - name: Upload OpenAPI JSON File
+        uses: actions/upload-artifact@v3
         with:
-          name: zap-report
-          path: zap_report.xml
+          name: openapi-json
+          path: openapi.json
+      # - name: Upload OpenAPI file
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: openapi-file
+      #     path: openapi.yaml
+
+      # - name: Run ZAP API Scan
+      #   run: |
+      #     docker run -t -v ${{ github.workspace }}:/zap/wrk zaproxy/zap-stable zap-api-scan.py \
+      #       -t /zap/wrk/openapi.yaml \
+      #       -f openapi \
+      #       -r /zap/wrk/zap_report.html
+      # - name: Upload ZAP Report
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: zap-report
+      #     path: zap_report.html
