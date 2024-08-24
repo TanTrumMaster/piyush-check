@@ -53,7 +53,7 @@ jobs:
 
     - name: Convert Postman to OpenAPI
       run: |
-        npm install postman-to-openapi
+        npm install -g postman-to-openapi
     
     - name: conversion
       run: |
