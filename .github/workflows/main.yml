@@ -75,10 +75,10 @@ jobs:
           name: openapi-json
           path: ./
 
-      - name: Run ZAP scan
-        run: |
-          BASE_URL=$(jq -r '.servers[0].url' openapi.json)
-          docker run -v $(pwd):/zap/wrk/:rw --network="host" -t owasp/zap2docker-stable zap-api-scan.py -t openapi.json -f openapi -r zap_report.html -d
+      - name: ZAP Scan
+        uses: zaproxy/action-api-scan@v0.7.0
+        with:
+            target: 'openapi.json'
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
