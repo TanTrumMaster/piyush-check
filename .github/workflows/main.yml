@@ -45,7 +45,7 @@ jobs:
           password: dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU
 
       - name: Pull the latest ZAP Docker image
-        run: docker pull zaproxy/zap-stable
+        run: docker pull owasp/zap2docker-stable:latest
 
       - name: Check if Postman Collection file exists
         run: ls -l postman_collection.json
