@@ -79,7 +79,12 @@ jobs:
                   for endpoint in endpoints:
                       outfile.write(endpoint + '\n')
                     "
-
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: tantrummaster
+          password: dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU
+          
       - name: Run ZAP Scan
         uses: docker://zaproxy/zap2docker-stable
         with:
