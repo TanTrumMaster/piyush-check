@@ -79,20 +79,18 @@ jobs:
                   for endpoint in endpoints:
                       outfile.write(endpoint + '\n')
                     "
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: tantrummaster
-          password: dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU
-          
-      - name: Run ZAP Scan
-        uses: docker://zaproxy/zap2docker-stable
-        with:
-          entrypoint: /bin/sh
-          args: -c "zap.sh -daemon -port 8080 && sleep 10 && zap-cli quick-scan -r zap-report.html -a -u ${{ github.event.inputs.repo_url }}"
 
-      - name: Upload ZAP Report
+      - name: Run ZAP Full Scan on Endpoints
+        run: |
+          mkdir -p ${{ github.workspace }}/report
+          chmod 777 ${{ github.workspace }}/report
+          while IFS= read -r endpoint; do
+            echo "Scanning endpoint: $endpoint"
+            docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t "https://dummy-backend-check.onrender.com$endpoint" -r /zap/wrk/$(basename $endpoint).html
+          done < endpoints.txt
+
+      - name: Upload ZAP Reports
         uses: actions/upload-artifact@v2
         with:
-          name: zap-report
-          path: zap-report.html
+          name: zap-reports
+          path: ${{ github.workspace }}/report
