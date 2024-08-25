@@ -38,22 +38,14 @@ jobs:
             name: postman-collection
             path: ./
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: tantrummaster
-          password: dckr_pat_RDR6QwvY94nJ-J2SKyjiPTKnpoU
-
-      - name: Pull the latest ZAP Docker image
-        run: docker pull zaproxy/zap-stable
-
       - name: Check if Postman Collection file exists
         run: ls -l postman_collection.json
 
       - name: Convert Postman to OpenAPI
         run: |
           npm install postman-to-openapi
-      - name: conversion
+
+      - name: Convert Postman to OpenAPI
         run: |
           node p2o ./postman_collection.json -f ./openapi.yaml -o ./options.json
 
@@ -67,21 +59,19 @@ jobs:
           name: openapi-json
           path: openapi.json
 
-     
-
       - name: Download OpenAPI JSON Artifact
         uses: actions/download-artifact@v2
         with:
           name: openapi-json
           path: ./
 
-      - name: Run ZAP scan
+      - name: Extract Endpoints from OpenAPI JSON
         run: |
-          docker run -v ${{ github.workspace }}/openapi.json:/zap/openapi.json -t zaproxy/zap-stable zap-full-scan.py -t https://backend-testing2-0.onrender.com -i /zap/openapi.json -r /zap/report.html
-
-      - name: Upload ZAP Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: zap-report
-          path: ./zap/report.html
-
+          python -c "
+          import json
+          with open('openapi.json') as f:
+          data = json.load(f)
+          paths = data.get('paths', {})
+          endpoints = [path for path in paths.keys()]
+          print('Extracted endpoints:', endpoints)
+          "
