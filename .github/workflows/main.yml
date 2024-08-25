@@ -69,16 +69,16 @@ jobs:
         id: extract_endpoints
         run: |
           python -c "
-import json
-with open('openapi.json') as f:
-    data = json.load(f)
-    paths = data.get('paths', {})
-    endpoints = [path for path in paths.keys()]
-    print('Extracted endpoints:', endpoints)
-    with open('endpoints.txt', 'w') as outfile:
-        for endpoint in endpoints:
-            outfile.write(endpoint + '\n')
-          "
+          import json
+          with open('openapi.json') as f:
+              data = json.load(f)
+              paths = data.get('paths', {})
+              endpoints = [path for path in paths.keys()]
+              print('Extracted endpoints:', endpoints)
+              with open('endpoints.txt', 'w') as outfile:
+                  for endpoint in endpoints:
+                      outfile.write(endpoint + '\n')
+                    "
 
       - name: Run ZAP Scan
         uses: docker://zaproxy/zap2docker-stable
