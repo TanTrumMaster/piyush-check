@@ -67,19 +67,22 @@ jobs:
           name: openapi-json
           path: openapi.json
 
-      - name: Run ZAP API Scan
+     
+
+      - name: Download OpenAPI JSON Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: openapi-json
+          path: ./
+
+      - name: Run ZAP scan
         run: |
-          mkdir -p ${{ github.workspace }}/report
-          chmod 777 ${{ github.workspace }}/report
-          docker run -v ${{ github.workspace }}:/zap/wrk:rw -t zaproxy/zap-stable zap-api-scan.py \
-            -t /zap/wrk/openapi.json \
-            -f openapi \
-            -r /zap/wrk/zap_report.html || true
-          echo "Checking if report exists..."
-          ls -l ${{ github.workspace }}/report
+          BASE_URL=$(jq -r '.servers[0].url' openapi.json)
+          docker run -v $(pwd):/zap/wrk/:rw --network="host" -t owasp/zap2docker-stable zap-api-scan.py -t openapi.json -f openapi -r zap_report.html -d
 
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: zap-report
-          path: ${{ github.workspace }}/report/zap_report.html
+          path: zap_report.html
+
