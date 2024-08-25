@@ -75,14 +75,13 @@ jobs:
           name: openapi-json
           path: ./
 
-      - name: ZAP Scan
-        uses: zaproxy/action-api-scan@v0.7.0
-        with:
-            target: 'openapi.json'
+      - name: Run ZAP scan
+        run: |
+          docker run -v ${{ github.workspace }}/openapi.json:/zap/openapi.json -t zaproxy/zap-stable zap-full-scan.py -t https://backend-testing2-0.onrender.com -i /zap/openapi.json -r /zap/report.html
 
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:
           name: zap-report
-          path: zap_report.html
+          path: ./zap/report.html
 
