@@ -66,6 +66,7 @@ jobs:
           path: ./
 
       - name: Extract Endpoints from OpenAPI JSON
+        id: extract_endpoints
         run: |
           python -c "
           import json
@@ -74,4 +75,22 @@ jobs:
               paths = data.get('paths', {})
               endpoints = [path for path in paths.keys()]
               print('Extracted endpoints:', endpoints)
-              "
+              with open('endpoints.txt', 'w') as outfile:
+                  for endpoint in endpoints:
+                      outfile.write(endpoint + '\n')
+                    "
+
+      - name: Install ZAP
+        run: |
+          sudo apt-get install -y zaproxy
+
+      - name: Run ZAP Scan
+        run: |
+          ZAP_BASE_URL="http://localhost:8080"
+          zap-cli quick-scan -r zap-report.html -a -u $ZAP_BASE_URL
+          
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-report
+          path: zap-report.html
