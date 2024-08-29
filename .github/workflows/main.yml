@@ -81,7 +81,7 @@ jobs:
           chmod 777 ${{ github.workspace }}/report
           while IFS= read -r endpoint; do
             echo "Scanning endpoint: $endpoint"
-            docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t "https://dummy-backend-check.onrender.com$endpoint" -r /zap/wrk/$(basename $endpoint).html || true
+            docker run -v ${{ github.workspace }}/report:/zap/wrk:rw -t ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t "https://dummy-backend-check.onrender.com$endpoint" -J /zap/wrk/$(basename $endpoint).json || true
           done < endpoints.txt
       - name: Upload ZAP Reports
         if: always()  # Ensure this step runs regardless of previous failures
