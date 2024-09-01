@@ -9,6 +9,7 @@ on:
       unique_id:
         description: 'Unique identifier for the workflow'
         required: true
+      
 
 
 jobs:
@@ -16,6 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Print the Unique ID
+        run: echo ${{ github.event.inputs.unique_id }}
+       
       - name: Checkout repository
         uses: actions/checkout@v2
 
